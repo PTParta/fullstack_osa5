@@ -4,19 +4,16 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
+  const [notificationMessage, setNotificationMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
-
-
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -32,7 +29,6 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
-
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -52,7 +48,7 @@ const App = () => {
       setPassword('')
     }
     catch (exception) {
-      setErrorMessage('wrong credentials')
+      setErrorMessage('wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -70,24 +66,45 @@ const App = () => {
     event.preventDefault()
     console.log('handling blog creation')
 
-    const newBlog = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl,
-      likes: 0,
-      user: user.id
+    if (newTitle === '' || newAuthor === '' || newUrl === '') {
+      setNewTitle('')
+      setNewAuthor('')
+      setNewUrl('')
+      setErrorMessage('fill all the fields when creating a new blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+      return
     }
-    console.log(newBlog)
-    blogService
-      .create(newBlog)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setNewTitle('')
-        setNewAuthor('')
-        setNewUrl('')
-      })
-  }
 
+    try {
+      const newBlog = {
+        title: newTitle,
+        author: newAuthor,
+        url: newUrl,
+        likes: 0,
+        user: user.id
+      }
+      console.log(newBlog)
+      blogService
+        .create(newBlog)
+        .then(returnedBlog => {
+          setBlogs(blogs.concat(returnedBlog))
+          setNewTitle('')
+          setNewAuthor('')
+          setNewUrl('')
+        })
+      setNotificationMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    } catch (exception) {
+      setErrorMessage('an error occurred')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
 
   const loginForm = () => (
     <div>
@@ -114,7 +131,6 @@ const App = () => {
         <button type="submit">login</button>
       </form>
     </div>
-
   )
 
   const blogsListed = () => (
@@ -165,11 +181,11 @@ const App = () => {
     </div>
   )
 
-
   return (
     <div>
 
       <Notification message={errorMessage} />
+      <Notification message={notificationMessage} />
 
       {user === null ?
         loginForm() :
