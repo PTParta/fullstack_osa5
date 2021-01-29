@@ -17,7 +17,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs(blogs)
+      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
     )
   }, [])
 
@@ -68,7 +68,8 @@ const App = () => {
       blogService
         .create(blogObject)
         .then(returnedBlog => {
-          setBlogs(blogs.concat(returnedBlog))
+          returnedBlog.user = user
+          setBlogs(blogs.concat(returnedBlog).sort((a, b) => b.likes - a.likes))
         })
       setNotificationMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
       setTimeout(() => {
@@ -80,6 +81,57 @@ const App = () => {
         setErrorMessage(null)
       }, 5000)
     }
+  }
+
+  const likeBlog = (id) => {
+    const blog = blogs.find(b => b.id === id)
+    console.log('blog before like')
+    console.log(blog)
+    const likedBlog = { ...blog, likes: blog.likes + 1 }
+    console.log('blog after like')
+    console.log(likedBlog)
+
+    blogService
+      .update(id, likedBlog)
+      .then(returnedBlog => {
+        console.log('returned blog')
+        console.log(returnedBlog)
+        returnedBlog.user = likedBlog.user
+        console.log(returnedBlog)
+        setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog).sort((a, b) => b.likes - a.likes))
+      })
+      .catch(error => {
+        setErrorMessage(
+          `Blog '${blog.title}' was already removed from server`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
+  }
+
+  const removeBlog = (id) => {
+    console.log('removing blog with an id of: ', id)
+
+    const blogToBeRemoved = blogs.filter(blog => blog.id === id)
+    console.log('blogToBeRemoved', blogToBeRemoved)
+    try {
+      blogService
+        .remove(id)
+        .then(() => {
+          setBlogs(blogs.filter(blog => blog.id !== id))
+        })
+      setNotificationMessage(`blog ${blogToBeRemoved[0].title} by ${blogToBeRemoved[0].author} removed`)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    } catch (exception) {
+      setErrorMessage('an error occurred')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+
   }
 
   const loginForm = () => (
@@ -122,12 +174,12 @@ const App = () => {
       </table>
 
       <Togglable buttonLabel='new note' ref={blogFormRef}>
-        <BlogForm user={user} createBlog={addBlog} setErrorMessage={setErrorMessage}
+        <BlogForm user={user} createBlog={addBlog} setErrorMessage={setErrorMessage} removeBlog={removeBlog}
         />
       </Togglable>
-      
+
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} likeBlog={likeBlog} user={user} removeBlog={removeBlog} />
       )}
     </div>
   )
