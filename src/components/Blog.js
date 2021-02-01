@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import React, { useState } from 'react'
 const Blog = ({ blog, likeBlog, user, removeBlog }) => {
   const blogStyle = {
@@ -27,10 +28,11 @@ const Blog = ({ blog, likeBlog, user, removeBlog }) => {
   }
   return (
     < div style={blogStyle} className='blog'>
-      <div style={hideWhenVisible}>
-        {blog.title} {blog.author} <button onClick={handleClick}> view</button >
+      <div style={hideWhenVisible} >
+        <div className='blogTitleAndAuthor'>{blog.title} {blog.author} </div>
+        <button onClick={handleClick}> view</button >
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className='blogWhole'>
         {blog.title} {blog.author}<button onClick={handleClick}> hide</button >
         <div>{blog.url}</div>
         <div>likes {blog.likes} <button onClick={() => handleLikeClick(blog.id)}>like</button> </div>
