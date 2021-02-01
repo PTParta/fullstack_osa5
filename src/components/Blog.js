@@ -8,19 +8,15 @@ const Blog = ({ blog, likeBlog, user, removeBlog }) => {
     marginBottom: 5
   }
   const [showAll, setShowAll] = useState(false)
-  /* 
-    console.log('user.username', user.username)
-    console.log('blog.user', blog.user)
-   */
+
   const hideWhenVisible = { display: showAll ? 'none' : '' }
   const showWhenVisible = { display: showAll ? '' : 'none' }
 
-  const handleClick = (event) => {
+  const handleClick = () => {
     setShowAll(!showAll)
   }
 
   const handleLikeClick = (id) => {
-    //event.preventDefault()
     likeBlog(id)
   }
 
@@ -28,11 +24,9 @@ const Blog = ({ blog, likeBlog, user, removeBlog }) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       removeBlog(id)
     }
-
   }
-
   return (
-    < div style={blogStyle}>
+    < div style={blogStyle} className='blog'>
       <div style={hideWhenVisible}>
         {blog.title} {blog.author} <button onClick={handleClick}> view</button >
       </div>

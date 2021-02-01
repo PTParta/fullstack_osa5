@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const BlogForm = ({ createBlog, user, setErrorMessage }) => {
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
-  
+
   const addBlog = (event) => {
     event.preventDefault()
 
@@ -66,4 +67,11 @@ const BlogForm = ({ createBlog, user, setErrorMessage }) => {
     </div>
   )
 }
+
+BlogForm.propTypes = {
+  createBlog: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
+  setErrorMessage: PropTypes.func.isRequired
+}
+
 export default BlogForm

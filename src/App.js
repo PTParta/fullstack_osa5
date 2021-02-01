@@ -85,22 +85,22 @@ const App = () => {
 
   const likeBlog = (id) => {
     const blog = blogs.find(b => b.id === id)
-    console.log('blog before like')
-    console.log(blog)
+    //console.log('blog before like')
+    //console.log(blog)
     const likedBlog = { ...blog, likes: blog.likes + 1 }
-    console.log('blog after like')
-    console.log(likedBlog)
+    //console.log('blog after like')
+    //console.log(likedBlog)
 
     blogService
       .update(id, likedBlog)
       .then(returnedBlog => {
-        console.log('returned blog')
-        console.log(returnedBlog)
+        //console.log('returned blog')
+        //console.log(returnedBlog)
         returnedBlog.user = likedBlog.user
-        console.log(returnedBlog)
+        //console.log(returnedBlog)
         setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog).sort((a, b) => b.likes - a.likes))
       })
-      .catch(error => {
+      .catch(() => {
         setErrorMessage(
           `Blog '${blog.title}' was already removed from server`
         )
